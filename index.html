@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BobOS</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+overflow:hidden;
+background:#080812;
+}
+
+#boot{
+position:fixed;
+inset:0;
+background:#080812;
+color:white;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+z-index:99999;
+}
+
+.bootLogo{
+font-size:60px;
+font-weight:bold;
+margin-bottom:15px;
+}
+
+#desktop{
+height:100vh;
+color:white;
+background:
+radial-gradient(circle at 20% 20%,#303080,transparent 35%),
+linear-gradient(135deg,#09091a,#25255d);
+}
+
+header{
+height:75px;
+display:flex;
+align-items:center;
+padding:20px;
+}
+
+.logo{
+font-size:30px;
+font-weight:bold;
+}
+
+#user{
+margin-left:auto;
+}
+
+#desktopApps{
+display:flex;
+flex-wrap:wrap;
+gap:12px;
+padding:20px;
+max-width:900px;
+max-height:calc(100vh - 140px);
+overflow:auto;
+}
+
+#desktopApps button,
+.installedIcon{
+width:105px;
+height:95px;
+color:white;
+background:transparent;
+border:0;
+border-radius:12px;
+cursor:pointer;
+font-size:28px;
+}
+
+#desktopApps button:hover,
+.installedIcon:hover{
+background:rgba(255,255,255,.15);
+}
+
+#desktopApps span,
+.installedIcon span{
+display:block;
+font-size:14px;
+margin-top:8px;
+}
+
+footer{
+position:fixed;
+bottom:0;
+width:100%;
+height:55px;
+display:flex;
+align-items:center;
+gap:15px;
+padding:8px;
+background:#0b0b14;
+z-index:5000;
+}
+
+footer button{
+border:0;
+background:transparent;
+color:white;
+font-size:24px;
+cursor:pointer;
+}
+
+#clock{
+margin-left:auto;
+margin-right:15px;
+}
+
+#startMenu{
+display:none;
+position:fixed;
+bottom:65px;
+left:10px;
+width:270px;
+padding:20px;
+border-radius:15px;
+background:#191927;
+box-shadow:0 0 30px black;
+z-index:9999;
+}
+
+#startMenu button{
+width:100%;
+padding:12px;
+margin:4px 0;
+border:0;
+border-radius:8px;
+background:#292943;
+color:white;
+text-align:left;
+cursor:pointer;
+}
+
+.app{
+position:absolute;
+left:15%;
+top:12%;
+width:620px;
+max-width:90vw;
+max-height:75vh;
+overflow:auto;
+background:#191927;
+border-radius:14px;
+box-shadow:0 0 40px black;
+}
+
+.titlebar{
+padding:12px;
+background:#292943;
+cursor:move;
+font-weight:bold;
+position:sticky;
+top:0;
+z-index:2;
+}
+
+.close{
+float:right;
+border:0;
+border-radius:5px;
+background:#d33;
+color:white;
+cursor:pointer;
+}
+
+.content{
+padding:20px;
+}
+
+.output{
+min-height:100px;
+padding:12px;
+background:#080808;
+color:#00ff88;
+white-space:pre-wrap;
+font-family:monospace;
+border-radius:6px;
+}
+
+textarea,input{
+width:100%;
+padding:10px;
+margin:5px 0;
+border:0;
+border-radius:6px;
+}
+
+textarea{
+height:200px;
+background:#080808;
+color:#00ff88;
+font-family:monospace;
+}
+
+.content button{
+padding:9px 14px;
+margin:4px;
+cursor:pointer;
+border-radius:6px;
+border:0;
+}
+
+.netBox{
+background:#10101c;
+padding:12px;
+margin:10px 0;
+border-radius:10px;
+}
+
+.storeCard{
+border:1px solid #44445f;
+}
+
+.storeCard:hover{
+transform:scale(1.02);
+}
+
+#installedApps{
+display:contents;
+}
+
+.browserBar{
+display:flex;
+gap:5px;
+}
+
+.browserBar input{
+margin:0;
+}
+
+.browserBar button{
+margin:0;
+}
+</style>
+</head>
+
+<body>
+
+<div id="boot">
+<div class="bootLogo">BOBOS</div>
+<div>Starting BobOS...</div>
+</div>
+
+<div id="desktop">
+
+<header>
+<div class="logo">BOBOS</div>
+<div id="user">Guest</div>
+</header>
+
+<main id="desktopApps">
+
+<button onclick="openApp('bob')">🤖<span>Bob</span></button>
+<button onclick="openApp('code')">💻<span>BobCode</span></button>
+<button onclick="openApp('files')">📁<span>Files</span></button>
+<button onclick="openApp('games')">🎮<span>Games</span></button>
+<button onclick="openApp('business')">💼<span>Business</span></button>
+<button onclick="openApp('electronics')">⚡<span>Electronics</span></button>
+<button onclick="openApp('models')">🧊<span>3D Studio</span></button>
+<button onclick="openApp('net')">🌐<span>BobNet</span></button>
+<button onclick="openApp('store')">🛍️<span>BobStore</span></button>
+<button onclick="openApp('browser')">🌐<span>BobBrowser</span></button>
+
+<div id="installedApps"></div>
+
+</main>
+
+<div id="windows"></div>
+
+<footer>
+<button onclick="toggleStart()">🚀</button>
+<span>BobOS</span>
+<span id="clock"></span>
+</footer>
+
+<div id="startMenu">
+
+<h2>BOBOS</h2>
+
+<button onclick="openApp('bob')">🤖 Bob</button>
+<button onclick="openApp('code')">💻 BobCode</button>
+<button onclick="openApp('files')">📁 Files</button>
+<button onclick="openApp('games')">🎮 Games</button>
+<button onclick="openApp('business')">💼 Business</button>
+<button onclick="openApp('electronics')">⚡ Electronics</button>
+<button onclick="openApp('models')">🧊 3D Studio</button>
+<button onclick="openApp('net')">🌐 BobNet</button>
+<button onclick="openApp('store')">🛍️ BobStore</button>
+<button onclick="openApp('browser')">🌐 BobBrowser</button>
+
+</div>
+</div>
+
+<script>
+
+let windowCount=0;
+
+let bobCoins=
+Number(localStorage.getItem("bobcoins"))||100;
+
+let installedApps=
+JSON.parse(localStorage.getItem("bobstore-apps")||"[]");
+
+let friends=[];
+let messages=[];
+let rooms=[];
+
+const storeApps=[
+{
+id:"calculator",
+name:"Bob Calculator",
+icon:"🧮",
+price:0,
+description:"A calculator for BobOS."
+},
+{
+id:"paint",
+name:"BobPaint",
+icon:"🎨",
+price:15,
+description:"Create digital drawings."
+},
+{
+id:"chat",
+name:"BobChat",
+icon:"💬",
+price:25,
+description:"Chat with your BobNet friends."
+},
+{
+id:"arcade",
+name:"Bob Arcade",
+icon:"🕹️",
+price:30,
+description:"Play games inside BobOS."
+},
+{
+id:"music",
+name:"BobMusic",
+icon:"🎵",
+price:20,
+description:"A music-player concept."
+},
+{
+id:"studio",
+name:"Bob Studio",
+icon:"🛠️",
+price:50,
+description:"Build your own BobOS apps."
+}
+];
+
+setTimeout(()=>{
+document.getElementById("boot").style.display="none";
+},1200);
+
+function clock(){
+document.getElementById("clock").textContent=
+new Date().toLocaleTimeString();
+}
+
+setInterval(clock,1000);
+clock();
+
+function toggleStart(){
+const menu=document.getElementById("startMenu");
+
+menu.style.display=
+menu.style.display==="block"?"none":"block";
+}
+
+function openApp(name){
+
+windowCount++;
+
+const win=document.createElement("div");
+
+win.className="app";
+
+win.style.left=120+windowCount*20+"px";
+win.style.top=90+windowCount*15+"px";
+win.style.zIndex=windowCount;
+
+let content="";
+
+if(name==="bob"){
+content=`
+<h2>🤖 Bob</h2>
+<p>Hello! I'm Bob, the assistant inside BobOS.</p>
+
+<input id="bobInput" placeholder="Talk to Bob">
+
+<button onclick="talk()">Send</button>
+
+<p id="bobAnswer">Bob is ready.</p>
+`;
+}
+
+if(name==="code"){
+
+const saved=localStorage.getItem("bobos-code")||"";
+
+content=`
+<h2>💻 BobCode</h2>
+
+<p>Write programs for BobOS.</p>
+
+<textarea id="codeBox"
+placeholder='say "Hello BobOS!"'>${escapeHTML(saved)}</textarea>
+
+<button onclick="saveCode()">💾 Save</button>
+
+<button onclick="runCode()">▶ Run</button>
+
+<div id="codeOutput" class="output">
+Ready.
+</div>
+`;
+}
+
+if(name==="files"){
+content=`
+<h2>📁 BobFiles</h2>
+
+<p>📄 BobCode Programs</p>
+<p>📁 Games</p>
+<p>📁 3D Projects</p>
+<p>📁 PCB Projects</p>
+<p>📁 Business Projects</p>
+
+<button onclick="downloadFile()">
+Create BobOS File
+</button>
+`;
+}
+
+if(name==="games"){
+content=`
+<h2>🎮 BobGames</h2>
+
+<p>Game system coming soon!</p>
+
+<button>🎯 Number Game</button>
+<button>🧩 Puzzle</button>
+<button>🚀 BobSpace</button>
+`;
+}
+
+if(name==="business"){
+content=`
+<h2>💼 BobBusiness</h2>
+
+<p>Build and manage a simulated business.</p>
+
+<button>Create Business</button>
+<button>Inventory</button>
+<button>Sales</button>
+<button>Expenses</button>
+`;
+}
+
+if(name==="electronics"){
+content=`
+<h2>⚡ BobElectronics</h2>
+
+<p>Electronics and PCB designer.</p>
+
+<button>New Circuit</button>
+<button>New PCB</button>
+<button>Components</button>
+`;
+}
+
+if(name==="models"){
+content=`
+<h2>🧊 Bob3D Studio</h2>
+
+<p>3D modeling workspace.</p>
+
+<button>Add Cube</button>
+<button>Add Sphere</button>
+<button>Add Cylinder</button>
+`;
+}
+
+if(name==="net"){
+
+const savedName=
+localStorage.getItem("bobnet-name")||"";
+
+content=`
+
+<h2>🌐 BobNet</h2>
+
+<div class="netBox">
+
+<h3>👤 My Profile</h3>
+
+<input
+id="netName"
+value="${escapeHTML(savedName)}"
+placeholder="Your BobNet name">
+
+<button onclick="saveNetProfile()">
+Save Profile
+</button>
+
+<p id="profileStatus">
+${savedName?
+"🟢 Online as "+escapeHTML(savedName):
+"No profile yet."}
+</p>
+
+</div>
+
+<div class="netBox">
+
+<h3>👥 Friends</h3>
+
+<input
+id="friendInput"
+placeholder="Friend's name">
+
+<button onclick="addFriend()">
+➕ Add Friend
+</button>
+
+<div id="friends">
+No friends yet.
+</div>
+
+</div>
+
+<div class="netBox">
+
+<h3>💬 Messages</h3>
+
+<input
+id="messageInput"
+placeholder="Write a message">
+
+<button onclick="sendMessage()">
+Send
+</button>
+
+<div id="messages" class="output">
+No messages yet.
+</div>
+
+</div>
+
+<div class="netBox">
+
+<h3>🎮 Game Rooms</h3>
+
+<button onclick="createRoom()">
+➕ Create Game Room
+</button>
+
+<div id="rooms">
+No rooms yet.
+</div>
+
+</div>
+
+<div class="netBox">
+
+<h3>🔔 Notifications</h3>
+
+<div id="notifications">
+You're all caught up!
+</div>
+
+</div>
+`;
+}
+
+if(name==="store"){
+
+content=`
+
+<h2>🛍️ BobStore</h2>
+
+<div class="netBox">
+
+<h3>🪙 BobCoins</h3>
+
+<p id="coinBalance">Loading...</p>
+
+<button onclick="earnCoins()">
+🪙 Earn 10 BobCoins
+</button>
+
+</div>
+
+<div class="netBox">
+
+<input
+id="storeSearch"
+placeholder="🔎 Search apps..."
+oninput="searchStore">
+
+</div>
+
+<div id="storeApps"></div>
+`;
+}
+
+if(name==="browser"){
+
+content=`
+
+<h2>🌐 BobBrowser</h2>
+
+<div class="browserBar">
+
+<button onclick="browserBack()">⬅️</button>
+
+<button onclick="browserForward()">➡️</button>
+
+<button onclick="browserHome()">🏠</button>
+
+<input
+id="browserSearch"
+placeholder="Search the web or enter a URL..."
+onkeydown="if(event.key==='Enter')browserGo()">
+
+<button onclick="browserGo()">🔎</button>
+
+</div>
+
+<div
+id="browserStatus"
+class="output"
+style="margin-top:10px">
+
+BobBrowser is ready!
+
+</div>
+
+<p>
+Type a website or search term and press Enter.
+</p>
+`;
+}
+
+win.innerHTML=`
+
+<div class="titlebar">
+
+${name.toUpperCase()}
+
+<button
+class="close"
+onclick="this.parentElement.parentElement.remove()">
+
+X
+
+</button>
+
+</div>
+
+<div class="content">
+
+${content}
+
+</div>
+`;
+
+document
+.getElementById("windows")
+.appendChild(win);
+
+makeDraggable(win);
+
+document
+.getElementById("startMenu")
+.style.display="none";
+
+if(name==="store"){
+setTimeout(showStore,50);
+}
+
+}
+
+function talk(){
+
+const input=
+document.getElementById("bobInput")
+.value
+.toLowerCase();
+
+let answer;
+
+if(input.includes("hello"))
+answer="Hello! Welcome to BobOS! 🤖";
+
+else if(input.includes("code"))
+answer="BobCode is my programming language!";
+
+else if(input.includes("what are you"))
+answer="I'm Bob, the assistant built into BobOS!";
+
+else
+answer="I'm still learning that command.";
+
+document.getElementById("bobAnswer")
+.textContent=answer;
+}
+
+function saveCode(){
+
+const code=
+document.getElementById("codeBox").value;
+
+localStorage.setItem("bobos-code",code);
+
+document.getElementById("codeOutput")
+.textContent="Program saved! 💾";
+}
+
+function runCode(){
+
+const code=
+document.getElementById("codeBox").value;
+
+const lines=code.split("\n");
+
+let output=[];
+
+for(const line of lines){
+
+if(line.startsWith("say ")){
+output.push(
+line.substring(4).replaceAll('"',"")
+);
+}
+
+else if(line.trim()!==""){
+output.push("BobCode: "+line);
+}
+
+}
+
+document.getElementById("codeOutput")
+.textContent=
+output.join("\n")||"No output.";
+}
+
+function downloadFile(){
+
+const blob=new Blob(
+["This file was created by BobOS!"],
+{type:"text/plain"}
+);
+
+const url=URL.createObjectURL(blob);
+
+const link=document.createElement("a");
+
+link.href=url;
+link.download="BobOS_File.txt";
+
+link.click();
+
+URL.revokeObjectURL(url);
+}
+
+function saveNetProfile(){
+
+const name=
+document.getElementById("netName")
+.value.trim();
+
+if(!name)return;
+
+localStorage.setItem("bobnet-name",name);
+
+document.getElementById("profileStatus")
+.textContent="🟢 Online as "+name;
+
+addNotification("👤 Profile saved!");
+}
+
+function addFriend(){
+
+const input=
+document.getElementById("friendInput");
+
+const name=input.value.trim();
+
+if(!name)return;
+
+friends.push(name);
+
+updateFriends();
+
+input.value="";
+
+addNotification("👥 Added "+name+"!");
+}
+
+function updateFriends(){
+
+const box=document.getElementById("friends");
+
+if(!box)return;
+
+if(friends.length===0){
+box.innerHTML="No friends yet.";
+return;
+}
+
+box.innerHTML=
+friends.map(friend=>
+`<p>🟢 ${escapeHTML(friend)}</p>`
+).join("");
+}
+
+function sendMessage(){
+
+const input=
+document.getElementById("messageInput");
+
+const message=input.value.trim();
+
+if(!message)return;
+
+const name=
+localStorage.getItem("bobnet-name")||"Guest";
+
+messages.push({
+name:name,
+message:message
+});
+
+updateMessages();
+
+input.value="";
+}
+
+function updateMessages(){
+
+const box=document.getElementById("messages");
+
+if(!box)return;
+
+if(messages.length===0){
+box.textContent="No messages yet.";
+return;
+}
+
+box.innerHTML=
+messages.map(m=>
+`<p><b>${escapeHTML(m.name)}:</b>
+${escapeHTML(m.message)}</p>`
+).join("");
+}
+
+function createRoom(){
+
+const room=prompt(
+"What should the game room be called?"
+);
+
+if(!room)return;
+
+rooms.push(room);
+
+updateRooms();
+
+addNotification(
+"🎮 Created room: "+room
+);
+}
+
+function updateRooms(){
+
+const box=document.getElementById("rooms");
+
+if(!box)return;
+
+if(rooms.length===0){
+box.innerHTML="No rooms yet.";
+return;
+}
+
+box.innerHTML=
+rooms.map(room=>
+`
+<p>
+🎮 ${escapeHTML(room)}
+
+<button onclick="
+joinRoom('${escapeJS(room)}')
+">
+Join
+</button>
+
+</p>
+`
+).join("");
+}
+
+function joinRoom(room){
+
+addNotification(
+"🎮 Joined "+room+"!"
+);
+}
+
+function addNotification(text){
+
+const box=
+document.getElementById("notifications");
+
+if(!box)return;
+
+box.innerHTML+=
+`<p>${escapeHTML(text)}</p>`;
+}
+
+function updateCoins(){
+
+const balance=
+document.getElementById("coinBalance");
+
+if(balance)
+balance.textContent=bobCoins+" BobCoins";
+
+localStorage.setItem("bobcoins",bobCoins);
+}
+
+function earnCoins(){
+
+bobCoins+=10;
+
+updateCoins();
+
+addNotification(
+"🪙 You earned 10 BobCoins!"
+);
+}
+
+function showStore(){
+
+updateCoins();
+
+const box=
+document.getElementById("storeApps");
+
+if(!box)return;
+
+box.innerHTML="";
+
+storeApps.forEach(app=>{
+box.innerHTML+=createStoreCard(app);
+});
+}
+
+function createStoreCard(app){
+
+const installed=
+installedApps.includes(app.id);
+
+return `
+
+<div class="netBox storeCard">
+
+<h3>
+${app.icon}
+${escapeHTML(app.name)}
+</h3>
+
+<p>
+${escapeHTML(app.description)}
+</p>
+
+<p>
+💰
+${app.price===0?
+"FREE":
+app.price+" BobCoins"}
+</p>
+
+${
+installed?
+
+`
+<button onclick="
+launchStoreApp('${escapeJS(app.id)}')
+">
+▶ Open
+</button>
+
+<button onclick="
+uninstallApp('${escapeJS(app.id)}')
+">
+🗑️ Uninstall
+</button>
+`
+
+:
+
+`
+<button onclick="
+buyApp('${escapeJS(app.id)}')
+">
+📥
+${app.price===0?
+"Install":
+"Buy & Install"}
+</button>
+`
+
+}
+
+</div>
+`;
+}
+
+function buyApp(id){
+
+const app=
+storeApps.find(a=>a.id===id);
+
+if(!app)return;
+
+if(installedApps.includes(id))return;
+
+if(app.price>bobCoins){
+
+alert(
+"You don't have enough BobCoins!"
+);
+
+return;
+}
+
+bobCoins-=app.price;
+
+installedApps.push(id);
+
+localStorage.setItem(
+"bobstore-apps",
+JSON.stringify(installedApps)
+);
+
+updateCoins();
+
+showStore();
+
+updateInstalledApps();
+
+addNotification(
+"📥 Installed "+app.name
+);
+}
+
+function uninstallApp(id){
+
+installedApps=
+installedApps.filter(
+appId=>appId!==id
+);
+
+localStorage.setItem(
+"bobstore-apps",
+JSON.stringify(installedApps)
+);
+
+showStore();
+
+updateInstalledApps();
+}
+
+function searchStore(){
+
+const input=
+document.getElementById("storeSearch");
+
+const box=
+document.getElementById("storeApps");
+
+if(!input||!box)return;
+
+const search=
+input.value.toLowerCase().trim();
+
+box.innerHTML="";
+
+storeApps
+.filter(app=>
+app.name.toLowerCase().includes(search)||
+app.description.toLowerCase().includes(search)
+)
+.forEach(app=>{
+box.innerHTML+=createStoreCard(app);
+});
+}
+
+function launchStoreApp(id){
+
+const app=
+storeApps.find(a=>a.id===id);
+
+if(!app)return;
+
+addNotification(
+"🚀 Opened "+app.name
+);
+
+alert(
+app.name+" is launching! 🚀"
+);
+}
+
+function updateInstalledApps(){
+
+const box=
+document.getElementById("installedApps");
+
+if(!box)return;
+
+box.innerHTML="";
+
+installedApps.forEach(id=>{
+
+const app=
+storeApps.find(a=>a.id===id);
+
+if(!app)return;
+
+const button=
+document.createElement("button");
+
+button.className="installedIcon";
+
+button.innerHTML=
+app.icon+
+`<span>${escapeHTML(app.name)}</span>`;
+
+button.onclick=
+()=>launchStoreApp(app.id);
+
+box.appendChild(button);
+});
+}
+
+let browserHistory=[];
+let browserPosition=-1;
+
+function browserGo(){
+
+const input=
+document.getElementById("browserSearch");
+
+if(!input)return;
+
+let value=input.value.trim();
+
+if(!value)return;
+
+let url;
+
+if(
+value.startsWith("http://")||
+value.startsWith("https://")
+){
+url=value;
+}
+
+else if(
+value.includes(".")&&
+!value.includes(" ")
+){
+url="https://"+value;
+}
+
+else{
+
+url=
+"https://www.google.com/search?q="+
+encodeURIComponent(value);
+
+}
+
+browserHistory=
+browserHistory.slice(
+0,
+browserPosition+1
+);
+
+browserHistory.push(url);
+
+browserPosition++;
+
+window.open(url,"_blank");
+
+const status=
+document.getElementById("browserStatus");
+
+if(status)
+status.textContent=
+"Opening: "+value;
+}
+
+function browserBack(){
+
+if(browserPosition>0){
+
+browserPosition--;
+
+window.open(
+browserHistory[browserPosition],
+"_blank"
+);
+}
+}
+
+function browserForward(){
+
+if(
+browserPosition<
+browserHistory.length-1
+){
+
+browserPosition++;
+
+window.open(
+browserHistory[browserPosition],
+"_blank"
+);
+}
+}
+
+function browserHome(){
+
+window.open(
+"https://www.google.com",
+"_blank"
+);
+}
+
+function makeDraggable(win){
+
+const bar=
+win.querySelector(".titlebar");
+
+let moving=false;
+let offsetX=0;
+let offsetY=0;
+
+bar.addEventListener(
+"mousedown",
+event=>{
+
+moving=true;
+
+offsetX=
+event.clientX-win.offsetLeft;
+
+offsetY=
+event.clientY-win.offsetTop;
+
+win.style.zIndex=++windowCount;
+}
+);
+
+document.addEventListener(
+"mousemove",
+event=>{
+
+if(!moving)return;
+
+win.style.left=
+event.clientX-offsetX+"px";
+
+win.style.top=
+event.clientY-offsetY+"px";
+}
+);
+
+document.addEventListener(
+"mouseup",
+()=>{
+moving=false;
+}
+);
+}
+
+function escapeHTML(value){
+
+return String(value)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+}
+
+function escapeJS(value){
+
+return String(value)
+.replaceAll("\\","\\\\")
+.replaceAll("'","\\'")
+.replaceAll("\n","\\n")
+.replaceAll("\r","\\r");
+}
+
+updateInstalledApps();
+
+</script>
+
+</body>
+</html>
